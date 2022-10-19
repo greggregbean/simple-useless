@@ -1,0 +1,4 @@
+2 prog1.o
+4 prog2.o
+1 prog3.o
+3 prog4.o
