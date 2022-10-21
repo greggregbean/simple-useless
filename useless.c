@@ -1,16 +1,4 @@
-
-// FD means "For Debugging"
-
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-
-#define MAXBUFSIZE 1000
-#define MAXNAMESIZE 20
+#include "uselessSetup.h"
 
 void run_process (int time_sleep, const char* object_name) {
     printf("Time sleep = %d. \n", time_sleep);
@@ -18,9 +6,9 @@ void run_process (int time_sleep, const char* object_name) {
 
     pid_t process_id = fork();
     
-    //FD:
-    //int child_status;
-    //wait(&child_status);
+    //For Debugging:
+    int child_status;
+    wait(&child_status);
 
     if(process_id < 0) printf("Failed to create child procces! \n");
 
@@ -44,19 +32,28 @@ void run_process (int time_sleep, const char* object_name) {
 
 
 int main() {
-    FILE* fp = fopen("file.txt", "r");
+    int fd = open("file.txt", O_RDONLY);
+    if(fd == -1) printf("Failed to open file! \n");
+
+    char buf[MAXBUFSIZE] = {'\0'};
+    read(fd, buf, MAXBUFSIZE);    
+    printf("All buf:\n%s\n\n", buf);
+    int iter = 0;
 
     int time_sleep = 0;
     char object_name[MAXNAMESIZE] = {'\0'};
 
-    int res = fscanf(fp, "%d", &time_sleep);
-
-    while(res != EOF) {
-        fscanf(fp, "%s", object_name);
+    while(buf[iter] != '\0') {
+        time_sleep = read_num(&iter, buf);
+        space_skip(&iter, buf);
+        strcpy(object_name, read_name(&iter, buf));
+        space_skip(&iter, buf);
+        
         run_process(time_sleep, object_name);
-        res = fscanf(fp, "%d", &time_sleep);
         printf("\n");
     }
 
-    fclose(fp);
+    if(close(fd) == -1) printf("Failed to close file! \n");
+
+    return 0;
 }
