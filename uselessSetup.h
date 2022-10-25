@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <time.h>
 
 #define MAXBUFSIZE 1000
 #define MAXNAMESIZE 20
